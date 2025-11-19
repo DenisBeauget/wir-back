@@ -9,7 +9,6 @@ import { Book } from "../types/books.js";
 import { UserRepository } from "../repositories/user.repository.js";
 import { AccountRepository } from "../repositories/account.repository.js";
 import { SessionRepository } from "../repositories/session.repository.js";
-import { BooksController } from "../controllers/books.controller.js";
 import { OAuth2Client } from "google-auth-library";
 import { AuthService } from "../services/auth.service.js";
 import { AuthController } from "../controllers/auth.controller.js";
@@ -60,5 +59,27 @@ export async function libraryRoute(fastify: FastifyInstance) {
       preHandler: authController.authMiddleWare.bind(authController),
     },
     libraryController.deleteBookFromLibrary.bind(libraryController)
+  );
+
+  fastify.get<{ Params: { bookId: string } }>(
+    "/api/library/:bookId",
+    {
+      preHandler: authController.authMiddleWare.bind(authController),
+    },
+    libraryController.findSpecificBookFromLibrary.bind(libraryController)
+  );
+
+  fastify.patch<{
+    Params: { bookId: string };
+    Body: {
+      comment: string;
+      rating: number;
+    };
+  }>(
+    "/api/library/:bookId",
+    {
+      preHandler: authController.authMiddleWare.bind(authController),
+    },
+    libraryController.updateSpecificBookFromLibrary.bind(libraryController)
   );
 }

@@ -98,4 +98,82 @@ export class LibraryController {
       });
     }
   }
+
+  async findSpecificBookFromLibrary(
+    request: FastifyRequest<{ Params: { bookId: string } }>,
+    reply: FastifyReply
+  ) {
+    try {
+      if (!request.user) {
+        return reply.code(401).send({ error: "Unauthorized" });
+      }
+
+      const resultBook = await this.libraryService.retrieveBookInLibrary(
+        request.user.id,
+        request.params.bookId
+      );
+
+      return reply.send({
+        data: resultBook,
+      });
+    } catch (error) {
+      console.log(error);
+      return reply.code(500).send({
+        error: "Internal server error",
+      });
+    }
+  }
+
+  async updateSpecificBookFromLibrary(
+    request: FastifyRequest<{
+      Params: { bookId: string };
+      Body: {
+        comment: string;
+        rating: number;
+      };
+    }>,
+    reply: FastifyReply
+  ) {
+    try {
+      if (!request.user) {
+        return reply.code(401).send({ error: "Unauthorized" });
+      }
+
+      const actualBook = await this.libraryService.retrieveBookInLibrary(
+        request.user.id,
+        request.params.bookId
+      );
+      let comment: string = "";
+      let rating: number;
+
+      if (actualBook) {
+        comment =
+          request.body.comment != null
+            ? request.body.comment
+            : actualBook.comment;
+        rating =
+          request.body.rating != null ? request.body.rating : actualBook.rating;
+
+        const resultBook = await this.libraryService.updateBookInLibrary(
+          request.user.id,
+          request.params.bookId,
+          rating,
+          comment
+        );
+
+        return reply.send({
+          data: resultBook,
+        });
+      } else {
+        return reply.code(404).send({
+          error: "Not found",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return reply.code(500).send({
+        error: "Internal server error",
+      });
+    }
+  }
 }
