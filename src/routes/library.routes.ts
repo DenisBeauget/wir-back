@@ -70,13 +70,13 @@ export async function libraryRoute(fastify: FastifyInstance) {
   );
 
   fastify.patch<{
-    Params: { bookId: string };
+    Params: { userBookId: string };
     Body: {
       comment: string;
       rating: number;
     };
   }>(
-    "/api/library/:bookId",
+    "/api/library/:userBookId",
     {
       preHandler: authController.authMiddleWare.bind(authController),
     },

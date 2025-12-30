@@ -31,6 +31,18 @@ export class LibraryRepository {
       },
     });
   }
+
+  async findUserBookById(userBookId: string) {
+    return this.prisma.userBook.findUnique({
+      where: {
+        id: userBookId,
+      },
+      include: {
+        book: true,
+      },
+    });
+  }
+
   async findAllBooksInUserLibrary(userId: string) {
     return this.prisma.userBook.findMany({
       where: {
@@ -46,17 +58,13 @@ export class LibraryRepository {
   }
 
   async updateUniqueBookInUserLibrary(
-    userId: string,
-    bookId: string,
-    rating: number,
-    comment: string
+    userBookId: string,
+    rating: number | null,
+    comment: string | null
   ) {
     return this.prisma.userBook.update({
       where: {
-        userId_bookId: {
-          userId: userId,
-          bookId: bookId,
-        },
+        id: userBookId,
       },
       data: {
         rating: rating,

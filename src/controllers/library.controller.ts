@@ -126,7 +126,7 @@ export class LibraryController {
 
   async updateSpecificBookFromLibrary(
     request: FastifyRequest<{
-      Params: { bookId: string };
+      Params: { userBookId: string };
       Body: {
         comment: string;
         rating: number;
@@ -139,14 +139,17 @@ export class LibraryController {
         return reply.code(401).send({ error: "Unauthorized" });
       }
 
-      const actualBook = await this.libraryService.retrieveBookInLibrary(
-        request.user.id,
-        request.params.bookId
+      const actualBook = await this.libraryService.retrieveUserBookById(
+        request.params.userBookId
       );
       let comment: string = "";
       let rating: number;
 
       if (actualBook) {
+        if (actualBook.userId !== request.user.id) {
+          return reply.code(403).send({ error: "Forbidden" });
+        }
+
         comment =
           request.body.comment != null
             ? request.body.comment
@@ -155,8 +158,7 @@ export class LibraryController {
           request.body.rating != null ? request.body.rating : actualBook.rating;
 
         const resultBook = await this.libraryService.updateBookInLibrary(
-          request.user.id,
-          request.params.bookId,
+          request.params.userBookId,
           rating,
           comment
         );
