@@ -5,8 +5,8 @@ import { booksRoutes } from "./books.routes.js";
 import { libraryRoute } from "./library.routes.js";
 
 export async function registerRoutes(app: FastifyInstance) {
-    await app.register(healthRoutes, { prefix: '/health'});
-    await app.register(authRoutes);
-    await app.register(booksRoutes);
-    await app.register(libraryRoute);
+  await app.register(healthRoutes, { prefix: "/health" });
+  await app.register(authRoutes);
+  await app.register(booksRoutes);
+  await app.register(libraryRoute);
 }
